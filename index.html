@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>向山舉目</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700&family=Noto+Sans+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --ink: #1a1a18; --fog: #f4f1ec; --mist: #e8e4dd; --moss: #4a5c3a;
+    --moss-light: #7a8f65; --earth: #8b6f4e; --stone: #9e9b94;
+    --cream: #faf8f4; --accent: #c4a35a; --text: #2c2c28; --text-muted: #7a7870;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Noto Sans TC', sans-serif; background: var(--cream); color: var(--text); overflow-x: hidden; }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 3rem; transition: background 0.4s, padding 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(250,248,244,0.95); backdrop-filter: blur(12px);
+    padding: 1rem 3rem; border-bottom: 0.5px solid rgba(0,0,0,0.08);
+  }
+  .nav-logo { font-family: 'Noto Serif TC', serif; font-size: 1.1rem; font-weight: 300; letter-spacing: 0.15em; color: var(--cream); transition: color 0.4s; text-decoration: none; }
+  nav.scrolled .nav-logo { color: var(--ink); }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a { font-size: 0.78rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.85); text-decoration: none; transition: color 0.3s; font-weight: 300; }
+  nav.scrolled .nav-links a { color: var(--text-muted); }
+  .nav-links a:hover { color: var(--accent); }
+  .hero { height: 100vh; position: relative; display: flex; align-items: flex-end; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; background: linear-gradient(165deg,#2d3a28 0%,#4a5c3a 30%,#3a4f2e 60%,#1a2615 100%); }
+  .hero-texture { position: absolute; inset: 0; opacity: 0.12; background-image: radial-gradient(circle at 25% 35%,rgba(196,163,90,0.4) 0%,transparent 50%),radial-gradient(circle at 75% 65%,rgba(255,255,255,0.1) 0%,transparent 45%); }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 60%); }
+  .leaf { position: absolute; width: 6px; height: 6px; background: rgba(196,163,90,0.4); border-radius: 50% 0 50% 0; animation: drift linear infinite; pointer-events: none; }
+  @keyframes drift { 0%{transform:translateY(-20px) rotate(0deg);opacity:0} 10%{opacity:1} 90%{opacity:0.6} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+  .hero-content { position: relative; z-index: 10; padding: 0 3rem 5rem; max-width: 680px; }
+  .hero-en { font-family:'Cormorant Garamond',serif; font-size:0.85rem; letter-spacing:0.25em; color:var(--accent); margin-bottom:1.2rem; font-style:italic; animation:fadeUp 0.9s ease 0.3s both; }
+  .hero-title { font-family:'Noto Serif TC',serif; font-size:clamp(2.8rem,5vw,4.5rem); font-weight:300; color:var(--cream); line-height:1.35; letter-spacing:0.08em; margin-bottom:1.5rem; animation:fadeUp 0.9s ease 0.5s both; }
+  .hero-title span { display:block; font-size:0.5em; color:rgba(255,255,255,0.55); letter-spacing:0.12em; margin-top:0.6rem; font-family:'Noto Sans TC',sans-serif; font-weight:300; }
+  .hero-tagline { font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:rgba(255,255,255,0.6); font-style:italic; letter-spacing:0.05em; animation:fadeUp 0.9s ease 0.7s both; }
+  .hero-scroll { position:absolute; bottom:2.5rem; right:3rem; z-index:10; display:flex; flex-direction:column; align-items:center; gap:0.5rem; color:rgba(255,255,255,0.4); font-size:0.65rem; letter-spacing:0.2em; }
+  .scroll-line { width:1px; height:60px; background:linear-gradient(to bottom,transparent,rgba(255,255,255,0.3)); animation:pulse-line 2s ease-in-out infinite; }
+  @keyframes pulse-line { 0%,100%{opacity:0.3;transform:scaleY(1)} 50%{opacity:0.8;transform:scaleY(1.1)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  .facility-strip { background:var(--ink); display:grid; grid-template-columns:repeat(3,1fr); }
+  .facility-card { position:relative; height:320px; overflow:hidden; cursor:pointer; }
+  .facility-card::after { content:''; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.2) 60%,transparent 100%); transition:opacity 0.4s; }
+  .facility-card:hover::after { opacity:0.5; }
+  .facility-card-bg { position:absolute; inset:0; transition:transform 0.6s ease; }
+  .facility-card:hover .facility-card-bg { transform:scale(1.06); }
+  .fc-museum { background:linear-gradient(135deg,#2a3d28 0%,#4a5c3a 50%,#3a4a2e 100%); }
+  .fc-restaurant { background:linear-gradient(135deg,#3d2a1a 0%,#6b4a2a 50%,#4a3020 100%); }
+  .fc-cafe { background:linear-gradient(135deg,#1a2a3d 0%,#2a4a6b 50%,#1e3050 100%); }
+  .fc-museum::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 60% 40%,rgba(122,143,101,0.3) 0%,transparent 60%); }
+  .fc-restaurant::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 40% 60%,rgba(196,163,90,0.25) 0%,transparent 60%); }
+  .fc-cafe::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 50% 30%,rgba(90,150,196,0.2) 0%,transparent 60%); }
+  .facility-card-content { position:absolute; bottom:0; left:0; right:0; z-index:10; padding:2rem; transform:translateY(8px); transition:transform 0.4s; }
+  .facility-card:hover .facility-card-content { transform:translateY(0); }
+  .fc-cat { font-family:'Cormorant Garamond',serif; font-size:0.75rem; letter-spacing:0.25em; color:var(--accent); font-style:italic; margin-bottom:0.5rem; }
+  .fc-title { font-family:'Noto Serif TC',serif; font-size:1.3rem; font-weight:300; color:var(--cream); letter-spacing:0.08em; margin-bottom:0.8rem; }
+  .fc-desc { font-size:0.78rem; color:rgba(255,255,255,0.55); line-height:1.7; letter-spacing:0.03em; max-height:0; overflow:hidden; transition:max-height 0.4s ease,opacity 0.4s; opacity:0; }
+  .facility-card:hover .fc-desc { max-height:80px; opacity:1; }
+  .fc-link { display:inline-flex; align-items:center; gap:0.4rem; margin-top:0.8rem; font-size:0.7rem; letter-spacing:0.15em; color:var(--accent); text-decoration:none; opacity:0; transform:translateY(4px); transition:opacity 0.4s 0.1s,transform 0.4s 0.1s; }
+  .facility-card:hover .fc-link { opacity:1; transform:translateY(0); }
+  .fc-link::after { content:'→'; }
+  .news-section { padding:5rem 3rem; max-width:1100px; margin:0 auto; }
+  .section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:2.5rem; }
+  .section-title-jp { font-family:'Noto Serif TC',serif; font-size:1.6rem; font-weight:300; letter-spacing:0.12em; color:var(--ink); }
+  .section-title-en { font-family:'Cormorant Garamond',serif; font-size:0.8rem; letter-spacing:0.2em; color:var(--stone); font-style:italic; }
+  .view-all { font-size:0.72rem; letter-spacing:0.15em; color:var(--moss); text-decoration:none; border-bottom:0.5px solid var(--moss-light); padding-bottom:2px; transition:color 0.3s; }
+  .view-all:hover { color:var(--accent); border-color:var(--accent); }
+  .news-tabs { display:flex; gap:0; margin-bottom:2.5rem; border-bottom:0.5px solid var(--mist); overflow-x:auto; }
+  .news-tab { font-size:0.75rem; letter-spacing:0.1em; padding:0.6rem 1.2rem; cursor:pointer; color:var(--stone); border-bottom:2px solid transparent; transition:color 0.3s,border-color 0.3s; white-space:nowrap; background:none; border-left:none; border-right:none; border-top:none; font-family:'Noto Sans TC',sans-serif; }
+  .news-tab.active { color:var(--moss); border-bottom-color:var(--moss); }
+  .news-tab:hover { color:var(--moss-light); }
+  .news-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; }
+  .news-card { cursor:pointer; transition:opacity 0.3s; }
+  .news-card:hover { opacity:0.8; }
+  .news-img-placeholder { width:100%; aspect-ratio:4/3; margin-bottom:1rem; border-radius:2px; }
+  .nip-1 { background:linear-gradient(135deg,#c4b89a 0%,#a89578 100%); }
+  .nip-2 { background:linear-gradient(135deg,#7a8f65 0%,#4a5c3a 100%); }
+  .nip-3 { background:linear-gradient(135deg,#8b7355 0%,#6b5a40 100%); }
+  .news-date { font-size:0.7rem; letter-spacing:0.12em; color:var(--stone); margin-bottom:0.4rem; }
+  .news-cat-badge { display:inline-block; font-size:0.65rem; letter-spacing:0.1em; padding:2px 8px; background:var(--mist); color:var(--text-muted); border-radius:1px; margin-bottom:0.5rem; margin-left:0.5rem; }
+  .news-title { font-family:'Noto Serif TC',serif; font-size:0.9rem; font-weight:400; line-height:1.6; color:var(--ink); letter-spacing:0.03em; }
+  .about-wrapper { background:var(--ink); }
+  .about-section { background:var(--ink); padding:6rem 3rem; display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; max-width:1200px; margin:0 auto; }
+  .about-en { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.78rem; letter-spacing:0.25em; color:var(--accent); margin-bottom:1.5rem; }
+  .about-heading { font-family:'Noto Serif TC',serif; font-size:1.8rem; font-weight:300; color:var(--cream); line-height:1.6; letter-spacing:0.1em; margin-bottom:2rem; }
+  .about-body { font-size:0.85rem; line-height:2.0; color:rgba(255,255,255,0.55); letter-spacing:0.04em; margin-bottom:2rem; }
+  .btn-outline { display:inline-flex; align-items:center; gap:0.6rem; font-size:0.72rem; letter-spacing:0.2em; color:var(--accent); border:0.5px solid rgba(196,163,90,0.4); padding:0.7rem 1.5rem; text-decoration:none; transition:background 0.3s,color 0.3s; }
+  .btn-outline:hover { background:var(--accent); color:var(--ink); }
+  .about-visual { position:relative; height:420px; }
+  .av-box1 { position:absolute; top:0; left:0; width:75%; height:75%; background:linear-gradient(135deg,#3a5030 0%,#5a7048 100%); border-radius:2px; }
+  .av-box2 { position:absolute; bottom:0; right:0; width:55%; height:55%; background:linear-gradient(135deg,#6b4a2a 0%,#8b6040 100%); border-radius:2px; }
+  .av-quote { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:var(--ink); border:0.5px solid rgba(196,163,90,0.3); padding:1.5rem; width:60%; text-align:center; z-index:10; }
+  .av-quote-text { font-family:'Noto Serif TC',serif; font-size:1rem; font-weight:300; color:var(--cream); letter-spacing:0.1em; line-height:1.8; }
+  .feature-row { display:grid; grid-template-columns:1fr 1fr; min-height:480px; }
+  .feature-row.reverse .feature-visual { order:-1; }
+  .feature-visual { position:relative; overflow:hidden; min-height:380px; }
+  .fv-museum { background:linear-gradient(155deg,#ddd8c8 0%,#b8b09c 50%,#9a8f78 100%); }
+  .fv-restaurant { background:linear-gradient(155deg,#2a3520 0%,#4a5c38 50%,#3a4a28 100%); }
+  .fv-cafe { background:linear-gradient(155deg,#2a2820 0%,#4a4038 50%,#3a3530 100%); }
+  .fv-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .fv-circle { width:180px; height:180px; border-radius:50%; border:0.5px solid rgba(255,255,255,0.2); display:flex; align-items:center; justify-content:center; }
+  .fv-icon { font-family:'Noto Serif TC',serif; font-size:2.5rem; font-weight:300; color:rgba(255,255,255,0.7); letter-spacing:0.05em; }
+  .feature-content { padding:4rem; display:flex; flex-direction:column; justify-content:center; background:var(--cream); }
+  .feature-row:nth-child(2) .feature-content { background:var(--fog); }
+  .feature-row:nth-child(3) .feature-content { background:var(--cream); }
+  .f-cat { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.75rem; letter-spacing:0.25em; color:var(--stone); margin-bottom:1.2rem; }
+  .f-title { font-family:'Noto Serif TC',serif; font-size:1.5rem; font-weight:300; color:var(--ink); letter-spacing:0.08em; margin-bottom:1.2rem; line-height:1.5; }
+  .f-body { font-size:0.82rem; line-height:2.0; color:var(--text-muted); letter-spacing:0.04em; margin-bottom:2rem; }
+  .ig-section { padding:5rem 3rem; background:var(--fog); }
+  .ig-section > .section-header { max-width:1100px; margin:0 auto 2.5rem; }
+  .ig-grid { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); gap:0.75rem; }
+  .ig-item { aspect-ratio:1; position:relative; overflow:hidden; cursor:pointer; border-radius:2px; }
+  .ig-bg { position:absolute; inset:0; transition:transform 0.4s ease; }
+  .ig-item:hover .ig-bg { transform:scale(1.08); }
+  .ig-1 { background:linear-gradient(135deg,#8fa878 0%,#6a8055 100%); }
+  .ig-2 { background:linear-gradient(135deg,#b8a888 0%,#8a7a68 100%); }
+  .ig-3 { background:linear-gradient(135deg,#789098 0%,#506870 100%); }
+  .ig-4 { background:linear-gradient(135deg,#98b088 0%,#70885a 100%); }
+  .ig-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.4); opacity:0; transition:opacity 0.3s; display:flex; align-items:center; justify-content:center; color:white; font-size:0.75rem; letter-spacing:0.12em; }
+  .ig-item:hover .ig-overlay { opacity:1; }
+  .guide-section { padding:5rem 3rem; max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1fr 2fr; gap:5rem; align-items:start; }
+  .guide-label { position:sticky; top:6rem; }
+  .guide-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:1.5rem; }
+  .guide-card { background:var(--fog); padding:2rem; border-radius:2px; border-left:2px solid var(--moss-light); transition:border-color 0.3s,background 0.3s; }
+  .guide-card:hover { border-color:var(--accent); background:var(--mist); }
+  .gc-icon { font-size:1.4rem; margin-bottom:0.8rem; display:block; }
+  .gc-title { font-family:'Noto Serif TC',serif; font-size:1rem; font-weight:400; letter-spacing:0.08em; color:var(--ink); margin-bottom:0.5rem; }
+  .gc-body { font-size:0.78rem; line-height:1.8; color:var(--text-muted); }
+  footer { background:var(--ink); padding:4rem 3rem 2.5rem; }
+  .footer-top { max-width:1100px; margin:0 auto; display:grid; grid-template-columns:1.5fr 1fr 1fr; gap:4rem; padding-bottom:3rem; border-bottom:0.5px solid rgba(255,255,255,0.1); margin-bottom:2rem; }
+  .footer-logo { font-family:'Noto Serif TC',serif; font-size:1.1rem; font-weight:300; letter-spacing:0.15em; color:var(--cream); margin-bottom:0.6rem; }
+  .footer-tagline { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.78rem; letter-spacing:0.15em; color:var(--stone); margin-bottom:1.5rem; }
+  .footer-addr { font-size:0.72rem; line-height:1.9; color:rgba(255,255,255,0.35); letter-spacing:0.04em; }
+  .footer-col-title { font-size:0.7rem; letter-spacing:0.2em; color:var(--stone); margin-bottom:1.2rem; }
+  .footer-links { list-style:none; display:flex; flex-direction:column; gap:0.7rem; }
+  .footer-links a { font-family:'Noto Sans TC',sans-serif; font-size:0.78rem; color:rgba(255,255,255,0.45); text-decoration:none; letter-spacing:0.05em; transition:color 0.3s; }
+  .footer-links a:hover { color:var(--accent); }
+  .footer-bottom { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; }
+  .footer-copy { font-size:0.65rem; letter-spacing:0.08em; color:rgba(255,255,255,0.25); }
+  .social-links { display:flex; gap:1.2rem; }
+  .social-links a { font-size:0.7rem; letter-spacing:0.12em; color:rgba(255,255,255,0.3); text-decoration:none; transition:color 0.3s; }
+  .social-links a:hover { color:var(--accent); }
+  .reveal { opacity:0; transform:translateY(20px); transition:opacity 0.7s ease,transform 0.7s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <a href="#" class="nav-logo">向山舉目</a>
+  <ul class="nav-links">
+    <li><a href="#about">品牌故事</a></li>
+    <li><a href="#news">最新消息</a></li>
+    <li><a href="#fruit">節氣鮮果實</a></li>
+    <li><a href="#gift">季節進行式</a></li>
+    <li><a href="#study">舉目學習</a></li>
+    <li><a href="#video">短影音</a></li>
+    <li><a href="#contact">聯絡我們</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-texture"></div>
+  <div class="hero-overlay"></div>
+  <div class="leaf" style="left:15%;animation-duration:12s;animation-delay:0s;width:8px;height:8px;"></div>
+  <div class="leaf" style="left:35%;animation-duration:16s;animation-delay:3s;"></div>
+  <div class="leaf" style="left:65%;animation-duration:10s;animation-delay:1.5s;width:5px;height:5px;"></div>
+  <div class="leaf" style="left:80%;animation-duration:14s;animation-delay:5s;width:7px;height:7px;"></div>
+  <div class="leaf" style="left:50%;animation-duration:18s;animation-delay:7s;width:4px;height:4px;"></div>
+  <div class="hero-content">
+    <p class="hero-en">LIVING, ART AND SCENERY</p>
+    <h1 class="hero-title">
+      生活と、<br>アートと、<br>風景。
+      <span>— 生活、藝術與風景的相遇之地 —</span>
+    </h1>
+    <p class="hero-tagline">Where nature, craft and time intertwine.</p>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>SCROLL</span>
+  </div>
+</section>
+
+<section class="facility-strip" id="facility">
+  <div class="facility-card">
+    <div class="facility-card-bg fc-museum"></div>
+    <div class="facility-card-content">
+      <p class="fc-cat">Museum</p>
+      <h3 class="fc-title">生活美術館</h3>
+      <p class="fc-desc">以四季更迭為背景，透過導覽行程深入探索藝術與自然共存的場域。</p>
+      <a href="#" class="fc-link">了解更多</a>
+    </div>
+  </div>
+  <div class="facility-card">
+    <div class="facility-card-bg fc-restaurant"></div>
+    <div class="facility-card-content">
+      <p class="fc-cat">Restaurant</p>
+      <h3 class="fc-title">未來食堂</h3>
+      <p class="fc-desc">在綠意與藝術交織的風景中，品嚐以在地食材精心料理的季節佳餚。</p>
+      <a href="#" class="fc-link">了解更多</a>
+    </div>
+  </div>
+  <div class="facility-card">
+    <div class="facility-card-bg fc-cafe"></div>
+    <div class="facility-card-content">
+      <p class="fc-cat">Café</p>
+      <h3 class="fc-title">café 未來</h3>
+      <p class="fc-desc">手作甜點搭配職人單品咖啡，在旅途中留下一段靜謐的時光。</p>
+      <a href="#" class="fc-link">了解更多</a>
+    </div>
+  </div>
+</section>
+
+<section class="news-section" id="news">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-title-en">Latest News</p>
+      <h2 class="section-title-jp">最新消息</h2>
+    </div>
+    <a href="#" class="view-all">查看全部</a>
+  </div>
+  <div class="news-tabs reveal">
+    <button class="news-tab active">全部</button>
+    <button class="news-tab">公告</button>
+    <button class="news-tab">美術館</button>
+    <button class="news-tab">食堂</button>
+    <button class="news-tab">咖啡</button>
+    <button class="news-tab">企劃展</button>
+    <button class="news-tab">媒體報導</button>
+  </div>
+  <div class="news-grid reveal">
+    <div class="news-card">
+      <div class="news-img-placeholder nip-1"></div>
+      <div class="news-date">2026.04.01 <span class="news-cat-badge">公告</span></div>
+      <h4 class="news-title">【2026年度 春季展覽換展暨開幕】</h4>
+    </div>
+    <div class="news-card">
+      <div class="news-img-placeholder nip-2"></div>
+      <div class="news-date">2026.03.27 <span class="news-cat-badge">公告</span></div>
+      <h4 class="news-title">2026年6月13日（六）文化講演會邀請函</h4>
+    </div>
+    <div class="news-card">
+      <div class="news-img-placeholder nip-3"></div>
+      <div class="news-date">2025.11.26 <span class="news-cat-badge">媒體報導</span></div>
+      <h4 class="news-title">岐阜新聞刊載80週年紀念活動特別報導</h4>
+    </div>
+  </div>
+</section>
+
+<div class="about-wrapper" id="about">
+  <div class="about-section">
+    <div>
+      <p class="about-en reveal">About</p>
+      <h2 class="about-heading reveal">在這裡，只有<br>這裡才有的<br>風景、藝術<br>與飲食體驗</h2>
+      <p class="about-body reveal">山麓人文村起源於1980年代後期，由企業員工自主推動的環境整備計畫。以「無限追求人之廣場」為核心理念——讓四季更迭的自然美景與藝術融為一體，建構出獨一無二的「工廠公園」。如今，這裡已超越企業範疇，向社會大眾開放，邀請每一位訪客在此停留，找尋屬於自己的豐盛時光。</p>
+      <a href="#" class="btn-outline reveal">探索我們的故事</a>
+    </div>
+    <div class="about-visual reveal">
+      <div class="av-box1"></div>
+      <div class="av-box2"></div>
+      <div class="av-quote">
+        <p class="av-quote-text">あるく、<br>はばたく、<br>めぐる。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="feature-section">
+  <div class="feature-row">
+    <div class="feature-visual fv-museum">
+      <div class="fv-overlay"><div class="fv-circle"><span class="fv-icon">美</span></div></div>
+    </div>
+    <div class="feature-content">
+      <p class="f-cat reveal">Museum · 生活美術館</p>
+      <h3 class="f-title reveal">365天皆可<br>自由散策的<br>綠地藝術空間</h3>
+      <p class="f-body reveal">園區分為全年開放的自由散步綠地，以及採預約制、由專業導覽員帶領的深度參觀區域。在此，藝術作品與自然景觀相互輝映，每一個轉角都藏有驚喜。</p>
+      <a href="#" class="btn-outline reveal" style="border-color:rgba(74,92,58,0.4);color:var(--moss);">預約導覽行程</a>
+    </div>
+  </div>
+  <div class="feature-row reverse">
+    <div class="feature-content">
+      <p class="f-cat reveal">Restaurant · 未來食堂</p>
+      <h3 class="f-title reveal">在關原的自然<br>與藝術之間<br>享用餐點</h3>
+      <p class="f-body reveal">員工親手準備的款待料理，以在地當季食材為本，在綠意盎然的環境中呈上每一道菜餚。這裡的用餐，是一場五感的體驗。</p>
+      <a href="#" class="btn-outline reveal" style="border-color:rgba(139,111,78,0.4);color:var(--earth);">查看菜單</a>
+    </div>
+    <div class="feature-visual fv-restaurant">
+      <div class="fv-overlay"><div class="fv-circle"><span class="fv-icon">食</span></div></div>
+    </div>
+  </div>
+  <div class="feature-row">
+    <div class="feature-visual fv-cafe">
+      <div class="fv-overlay"><div class="fv-circle"><span class="fv-icon">café</span></div></div>
+    </div>
+    <div class="feature-content">
+      <p class="f-cat reveal">Café · café 未來</p>
+      <h3 class="f-title reveal">自製甜點<br>與精品咖啡<br>的靜謐片刻</h3>
+      <p class="f-body reveal">嚴選食材製成的手工甜點，搭配一杯一杯現沖的精品咖啡。在史跡探訪的旅途之間，請在這裡稍作歇息，讓時間慢下來。</p>
+      <a href="#" class="btn-outline reveal">查看菜單</a>
+    </div>
+  </div>
+</section>
+
+<section class="ig-section">
+  <div class="section-header reveal">
+    <div>
+      <p class="section-title-en">Instagram</p>
+      <h2 class="section-title-jp">最新動態</h2>
+    </div>
+    <a href="#" class="view-all">@ningenmura</a>
+  </div>
+  <div class="ig-grid reveal">
+    <div class="ig-item"><div class="ig-bg ig-1"></div><div class="ig-overlay">查看</div></div>
+    <div class="ig-item"><div class="ig-bg ig-2"></div><div class="ig-overlay">查看</div></div>
+    <div class="ig-item"><div class="ig-bg ig-3"></div><div class="ig-overlay">查看</div></div>
+    <div class="ig-item"><div class="ig-bg ig-4"></div><div class="ig-overlay">查看</div></div>
+  </div>
+</section>
+
+<section class="guide-section" id="guide">
+  <div class="guide-label">
+    <p class="section-title-en reveal">Facility Guide</p>
+    <h2 class="section-title-jp reveal">參觀指南</h2>
+    <p style="font-size:0.8rem;line-height:1.9;color:var(--text-muted);margin-top:1.2rem;" class="reveal">一切您需要知道的<br>參觀資訊，都在這裡。</p>
+  </div>
+  <div class="guide-cards">
+    <div class="guide-card reveal"><span class="gc-icon">🗺</span><h4 class="gc-title">交通方式</h4><p class="gc-body">名古屋→關原約40分（JR東海道線）。JR關原站徒步約20分鐘，或搭乘名神高速公路關原交流道。</p></div>
+    <div class="guide-card reveal"><span class="gc-icon">🕙</span><h4 class="gc-title">營業時間</h4><p class="gc-body">美術館：木・金・土 10:00–13:00（完全預約制）。食堂・咖啡：請見各設施頁面。</p></div>
+    <div class="guide-card reveal"><span class="gc-icon">🎫</span><h4 class="gc-title">導覽行程</h4><p class="gc-body">由專業人員帶領，深入了解藝術與建築的背景故事。請提前透過電話或網路預約。</p></div>
+    <div class="guide-card reveal"><span class="gc-icon">💬</span><h4 class="gc-title">常見問題</h4><p class="gc-body">停車場、無障礙設施、攝影規定等相關資訊，請至常見問題頁面查閱。</p></div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="footer-top">
+    <div>
+      <p class="footer-logo">山麓人文村</p>
+      <p class="footer-tagline">LIVING, ART AND SCENERY</p>
+      <p class="footer-addr">〒503-1593<br>岐阜縣不破郡關原町2067<br>關原製作所株式會社內<br><br>TEL: 0584-43-1878</p>
+    </div>
+    <div>
+      <p class="footer-col-title">PAGES</p>
+      <ul class="footer-links">
+        <li><a href="#">關於我們</a></li>
+        <li><a href="#">最新消息</a></li>
+        <li><a href="#">生活美術館</a></li>
+        <li><a href="#">未來食堂</a></li>
+        <li><a href="#">café 未來</a></li>
+        <li><a href="#">財團介紹</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-col-title">INFO</p>
+      <ul class="footer-links">
+        <li><a href="#">參觀指南</a></li>
+        <li><a href="#">導覽行程預約</a></li>
+        <li><a href="#">聯絡我們</a></li>
+        <li><a href="#">隱私政策</a></li>
+        <li><a href="#">影片</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 山麓人文村財團法人 All Rights Reserved.</p>
+    <div class="social-links">
+      <a href="#">Instagram</a>
+      <a href="#">YouTube</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+const tabs = document.querySelectorAll('.news-tab');
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
